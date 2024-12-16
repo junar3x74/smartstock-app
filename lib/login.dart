@@ -15,93 +15,153 @@ class _LoginPageState extends State<LoginPage> {
 
   // Login function that sends HTTP POST request to the server
   Future<void> _login() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter both email and password')),
+      );
+      return;
+    }
+
+    // Email validation
+    String email = _emailController.text;
+    if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invalid email format')),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    var url = Uri.parse(
-        "http://192.168.1.2/smartstock_app/backend/login.php"); // Update with your server IP
+    var url = Uri.parse("http://192.168.1.4/smartstock_app/backend/login.php");
 
-    var response = await http.post(url, body: {
-      'email': _emailController.text,
-      'password': _passwordController.text,
-    });
+    try {
+      var response = await http.post(url, body: {
+        'email': _emailController.text,
+        'password': _passwordController.text,
+      });
 
-    setState(() {
-      _isLoading = false;
-    });
+      setState(() {
+        _isLoading = false;
+      });
 
-    var result = json.decode(response.body);
+      var result = json.decode(response.body);
 
-    if (result['success']) {
-      // If login is successful, navigate to HomePage
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+      if (result['success']) {
+        // If login is successful, navigate to HomePage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        // If login failed, show the error message in the snack bar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'] ?? 'Login Failed')),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Handle network error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Network error: $e')),
       );
-    } else {
-      // If login failed, show a snack bar with error message
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Login Failed')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: AppBar(
+        title: Text('Login'),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        elevation: 4,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Logo image
-              Image.asset(
-                'assets/smart_log.png', // Ensure the logo image is in the 'assets' folder
-                height: 150, // Adjust as per your logo size
-                width: 150,
-              ),
-              SizedBox(height: 40),
-
-              // Email field
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Logo image
+                Image.asset(
+                  'assets/smart_log.png', 
+                  height: 150, 
+                  width: 150,
                 ),
-              ),
-              SizedBox(height: 16),
+                SizedBox(height: 40),
 
-              // Password field
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 32),
-
-              // Login button
-              _isLoading
-                  ? CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _login,
-                      child: Text('Login'),
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 100, vertical: 15),
-                        backgroundColor: Colors.blue, // Replaces 'primary'
-                        textStyle: TextStyle(fontSize: 18),
-                      ),
+                // Email field with rounded corners and shadow
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(color: Colors.blueAccent),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
                     ),
-            ],
+                    prefixIcon: Icon(Icons.email, color: Colors.blueAccent),
+                    filled: true,
+                    fillColor: Colors.blueGrey[50],
+                  ),
+                ),
+                SizedBox(height: 16),
+
+                // Password field with rounded corners and shadow
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    labelStyle: TextStyle(color: Colors.blueAccent),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    prefixIcon: Icon(Icons.lock, color: Colors.blueAccent),
+                    filled: true,
+                    fillColor: Colors.blueGrey[50],
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 32),
+
+                // Login button with modern design
+                _isLoading
+                    ? CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: _login,
+                        child: Text('Login', style: TextStyle(fontSize: 18)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 5,
+                        ),
+                      ),
+                SizedBox(height: 20),
+
+                // "Forgot password" link styled with subtle underlining
+                TextButton(
+                  onPressed: () {
+                    // Placeholder for forgot password functionality
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Forgot password feature')),
+                    );
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(color: Colors.blueAccent, fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

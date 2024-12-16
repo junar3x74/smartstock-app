@@ -53,6 +53,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+  - assets/smart_go.png
+  - assets/smart_log.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -76,6 +79,7 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   # fonts:
+
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

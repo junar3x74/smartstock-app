@@ -10,7 +10,7 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   // Fetch products with categories and images from the backend
   Future<List> fetchProducts() async {
-    var url = Uri.parse("http://192.168.1.4/smartstock_app/backend/products.php");
+    var url = Uri.parse("http://192.168.1.5/smartstock_app/backend/products.php");
     var response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -63,7 +63,7 @@ class _ProductPageState extends State<ProductPage> {
 
               // Get the image URL (adjust path if needed)
               String imageUrl = product['product_image'] != null
-                  ? 'http://192.168.1.4/smartstock_app/storage/app/public/${product['product_image']}'
+                  ? 'http://192.168.1.5/smartstock_app/storage/app/public/${product['product_image']}'
                   : ''; // Default image path, adjust as necessary
 
               return Card(

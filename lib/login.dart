@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    var url = Uri.parse("http://192.168.1.4/smartstock_app/backend/login.php");
+    var url = Uri.parse("http://192.168.1.5/smartstock_app/backend/login.php");
 
     try {
       var response = await http.post(url, body: {

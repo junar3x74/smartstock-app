@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
 
   // Fetch user profile data
   Future<void> fetchUserProfile() async {
-    var url = Uri.parse('http://192.168.1.4/smartstock_app/backend/login.php'); // Update with your correct API URL
+    var url = Uri.parse('http://192.168.1.5/smartstock_app/backend/login.php'); // Update with your correct API URL
 
     try {
       var response = await http.post(url, body: {
